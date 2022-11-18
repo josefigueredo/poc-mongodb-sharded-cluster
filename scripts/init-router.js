@@ -1,0 +1,6 @@
+sh.addShard("rs-shard-gdpr/rs-shard-gdpr-a:27017")
+sh.addShard("rs-shard-gdpr/rs-shard-gdpr-b:27017")
+sh.addShard("rs-shard-gdpr/rs-shard-gdpr-c:27017")
+sh.addShard("rs-shard-rotw/rs-shard-rotw-a:27017")
+sh.addShard("rs-shard-rotw/rs-shard-rotw-b:27017")
+sh.addShard("rs-shard-rotw/rs-shard-rotw-c:27017")

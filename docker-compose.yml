@@ -1,0 +1,135 @@
+version: '3'
+services:
+
+## Router
+  router01:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: router-01
+    command: mongos --port 27017 --configdb rs-config-server/configsvr01:27017 --bind_ip_all --keyFile /data/mongodb-keyfile
+    ports:
+      - 27117:27017
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_router01_db:/data/db
+      - mongodb_cluster_router01_config:/data/configdb
+
+## Config Servers
+  configsvr01:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: mongo-config-01 
+    command: mongod --port 27017 --configsvr --replSet rs-config-server --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_configsvr01_db:/data/db
+      - mongodb_cluster_configsvr01_config:/data/configdb
+    ports:
+      - 27119:27017
+    links:
+      - rs-shard-gdpr-a
+      - rs-shard-rotw-a 
+
+## Shards
+  ## Shards 01
+   
+  rs-shard-gdpr-a:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-01-node-a
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-gdpr --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_gdpr_a_db:/data/db
+      - mongodb_cluster_shard_gdpr_a_config:/data/configdb
+    ports:
+      - 27122:27017
+    links:
+      - rs-shard-gdpr-b
+      - rs-shard-gdpr-c
+  rs-shard-gdpr-b:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-01-node-b
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-gdpr --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_gdpr_b_db:/data/db
+      - mongodb_cluster_shard_gdpr_b_config:/data/configdb
+    ports:
+      - 27123:27017
+  rs-shard-gdpr-c:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-01-node-c
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-gdpr --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_gdpr_c_db:/data/db
+      - mongodb_cluster_shard_gdpr_c_config:/data/configdb
+    ports:
+      - 27124:27017
+
+  ## Shards 02
+  rs-shard-rotw-a:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-02-node-a
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-rotw --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_rotw_a_db:/data/db
+      - mongodb_cluster_shard_rotw_a_config:/data/configdb
+    ports:
+      - 27125:27017
+    links:
+      - rs-shard-rotw-b
+      - rs-shard-rotw-c
+  rs-shard-rotw-b:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-02-node-b
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-rotw --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_rotw_b_db:/data/db
+      - mongodb_cluster_shard_rotw_b_config:/data/configdb
+    ports:
+      - 27126:27017
+  rs-shard-rotw-c:
+    build: 
+      context: mongodb-build
+    image: wnc-mongo:6.0.2
+    container_name: shard-02-node-c
+    command: mongod --port 27017 --shardsvr --replSet rs-shard-rotw --keyFile /data/mongodb-keyfile
+    volumes:
+      - ./scripts:/scripts
+      - mongodb_cluster_shard_rotw_c_db:/data/db
+      - mongodb_cluster_shard_rotw_c_config:/data/configdb
+    ports:
+      - 27127:27017
+
+volumes:
+  mongodb_cluster_router01_db:
+  mongodb_cluster_router01_config:
+  mongodb_cluster_configsvr01_db:
+  mongodb_cluster_configsvr01_config:
+  mongodb_cluster_shard_gdpr_a_db:
+  mongodb_cluster_shard_gdpr_a_config:
+  mongodb_cluster_shard_gdpr_b_db:
+  mongodb_cluster_shard_gdpr_b_config:
+  mongodb_cluster_shard_gdpr_c_db:
+  mongodb_cluster_shard_gdpr_c_config:
+  mongodb_cluster_shard_rotw_a_db:
+  mongodb_cluster_shard_rotw_a_config:
+  mongodb_cluster_shard_rotw_b_db:
+  mongodb_cluster_shard_rotw_b_config:
+  mongodb_cluster_shard_rotw_c_db:
+  mongodb_cluster_shard_rotw_c_config:
